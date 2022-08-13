@@ -1,0 +1,64 @@
+Stratégie flore
+5 mai 2022
+
+X. 1.1 Flore X_strategie flore
+1_taxons_pnm_21-04-2022
+
+Importer la table Taxons_PNM
+supprimer les espèces exogènes
+Enlever les taxons non présents. après 90 (pnm_ap90)
+
+Croiser cette liste avec geonature
+Maille 1000
+filtre date - Après 1990 - ou pas vus depuis 1990 - historique
+Nombre de taxons présents sur la maille
+Nombre d'observations
+Nombre de taxons protégés / patrimoniaux
+Nombre de taxons selon le statut uicn paca (colonne uicn paca, tout garder)
+
+Dissocier les stratégies de connaissance et de conservation
+conservation : danger critique (statut uicn : CR, EN, VU, NT, LC)
+connaissance : toutes les autres
+table espèce avec attribut conservation OU connaissance (éditable)
+
+attribut priorité pour chaque espèce (éditable) quelle que soit la catégorie (conservation ou connaissance)
+Score pour chaque espèce et AN
+score >=9 priorité 1
+score 8 priorité 2
+score 7 priorité 3
+score < 7 priorité Null
+
+Garder les attributs P à Z
+
+filtrer à la demande (priorité + espèce protégée, etc)
+
+colonne taxon_x
+
+
+
+
+
+OGR_XLSX_HEADERS=FORCE ogr2ogr  -f PostgreSQL PG:"service=projets" -lco SCHEMA=flore   1_taxons_pnm_21-04-22.xlsx champs_taxons_pnm
+
+OGR_XLSX_HEADERS=FORCE ogr2ogr  -f PostgreSQL PG:"service=projets" -lco SCHEMA=flore   1_taxons_pnm_21-04-22.xlsx Taxons_PNM
+
+
+
+On repart du tableau de Jean-Michel
+On ajoute la colonne calculée par Adèle
+On bidouille les espèces/sses suivant les préconisations d'Adèle
+
+Choix du taxref : faire des essais en v12, v14.
+
+Espèce mal nommée en v12 :
+Hieracium erigerontinum (Nägeli & Peter) Arv.-Touv., 1894
+101936 au lieu de 102019
+
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Rosales Rosaceae                        Plantes vasculaires     Angiospermes    92669                   92667   ES      Cotoneaster juranus     Gand., 1875     Cotoneaster juranus Gand., 1875 <i>Cotoneaster juranus</i> Gand., 1875   Cotoneaster integerrimus Medik., 1793   Cotonéaster vulgaire, Cotonéaster sauvage               7       P                                                                                                                               https://inpn.mnhn.fr/espece/cd_nom/92669
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Rosales Rosaceae                        Plantes vasculaires     Angiospermes    92686                   92667   ES      Cotoneaster obtusisepalus       Gand., 1875     Cotoneaster obtusisepalus Gand., 1875    <i>Cotoneaster obtusisepalus</i> Gand., 1875    Cotoneaster integerrimus Medik., 1793   Cotonéaster vulgaire, Cotonéaster sauvage               7       P                                                                                                       https://inpn.mnhn.fr/espece/cd_nom/92686
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Malpighiales    Euphorbiaceae   Euphorbioideae  Euphorbieae     Plantes vasculaires     Angiospermes    134376                  97511   SSES    Euphorbia exigua subsp. exigua  L., 1753        Euphorbia exigua subsp. exigua L., 1753  <i>Euphorbia exigua </i>subsp.<i> exigua</i> L., 1753   Euphorbia exigua L., 1753       Euphorbe fluette        Dwarf Spurge    3       P                                                                                               https://inpn.mnhn.fr/espece/cd_nom/134376
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Gentianales     Rubiaceae       Rubioideae      Rubieae Plantes vasculaires     Angiospermes    134855                  99373   SSES    Galium aparine subsp. aparine   L., 1753        Galium aparine subsp. aparine L., 1753   <i>Galium aparine </i>subsp.<i> aparine</i> L., 1753    Galium aparine L., 1753 Gaillet gratteron, Herbe collante       Cleavers        7       P                                               P                       I       I               Ihttps://inpn.mnhn.fr/espece/cd_nom/134855
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Gentianales     Rubiaceae       Rubioideae      Rubieae Plantes vasculaires     Angiospermes    134858                  99549   SSES    Galium aparine subsp. spurium   (L.) Hartm., 1846       Galium aparine subsp. spurium (L.) Hartm., 1846  <i>Galium aparine </i>subsp.<i> spurium</i> (L.) Hartm., 1846   Galium spurium L., 1753                 7       P                                                                                                               https://inpn.mnhn.fr/espece/cd_nom/134858
+TAXREF_INPN_v12/TAXREFv12.txt:Plantae           Equisetopsida   Gentianales     Rubiaceae       Rubioideae      Rubieae Plantes vasculaires     Angiospermes    134859                  99549   SSES    Galium aparine subsp. tenerum   (Schleich. ex Gaudin) Cout., 1939Galium aparine subsp. tenerum (Schleich. ex Gaudin) Cout., 1939 <i>Galium aparine </i>subsp.<i> tenerum</i> (Schleich. ex Gaudin) Cout., 1939   Galium spurium L., 1753                 7       P                                                                       https://inpn.mnhn.fr/espece/cd_nom/134859
+
+Hieracium ...
