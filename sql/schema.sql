@@ -1132,8 +1132,6 @@ GRANT USAGE ON SCHEMA flore TO consult_eau;
 -- Name: TABLE taxref_12; Type: ACL; Schema: flore; Owner: flore
 --
 
-REVOKE ALL ON TABLE flore.taxref_12 FROM flore;
-GRANT SELECT ON TABLE flore.taxref_12 TO flore;
 GRANT ALL ON TABLE flore.taxref_12 TO admin;
 GRANT SELECT ON TABLE flore.taxref_12 TO consult_flore;
 GRANT SELECT ON TABLE flore.taxref_12 TO pnm_consult;
@@ -1255,6 +1253,7 @@ GRANT SELECT ON TABLE flore.taxref TO pnm_consult;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA flore GRANT SELECT ON TABLES  TO consult_agpasto;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA flore GRANT SELECT ON TABLES  TO consult_eau;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA flore GRANT ALL ON TABLES  TO flore;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA flore GRANT SELECT ON TABLES  TO consult_flore;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA flore GRANT SELECT ON TABLES  TO pnm_consult;
 
