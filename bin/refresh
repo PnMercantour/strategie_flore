@@ -1,0 +1,3 @@
+#!/bin/sh
+ROOTDIR=$(dirname $0)/..
+psql -f $ROOTDIR/sql/refresh.sql service=projets

@@ -31,6 +31,13 @@ where r.cd_ref is not null
         or t.id_rang not in ('ES', 'SSES', 'VAR')
     );
 --
+-- contrôle d'intégrité de flore.redirection_taxon, le cd_ref doit être dans la stratégie
+select *
+from flore.redirection_taxon rt
+    left join flore.strategie_taxons st on rt.cd_ref = st.cd_ref
+where rt.cd_ref is not null
+    and st.cd_ref is null;
+--
 -- table flore.redirection_taxon
 --
 -- Visualisation des redirections nulles

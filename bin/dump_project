@@ -1,0 +1,5 @@
+#!/bin/sh
+ROOTDIR=$(dirname $0)/..
+psql -c "select encode(content, 'hex') from flore.qgis_projects where name = 'Stratégie Flore';" -q -t service=projets|xxd -r -p |zcat > $ROOTDIR/QGIS/"Stratégie Flore.qgs"
+
+# https://blog.cleverelephant.ca/2021/04/psql-binary.html

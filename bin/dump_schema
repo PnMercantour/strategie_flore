@@ -1,0 +1,3 @@
+#!/bin/sh
+ROOTDIR=$(dirname $0)/..
+ssh bddcluster -l postgres pg_dump -d bd_pnm -s --schema=flore >$ROOTDIR/sql/schema.sql

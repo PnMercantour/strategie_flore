@@ -6,7 +6,7 @@ Lire la doc (répertoire doc)
 
 ## Outils
 
-Projet QGIS accessible en ligne (service `projets`, schéma `flore`, projet `Stratégie Flore`) ou dans le répertoire QGIS.
+Projet QGIS accessible en ligne (service `projets`, schéma `flore`, projet `Stratégie Flore`) ou dans le répertoire QGIS du projet.
 
 ## Structure de la base de données
 
@@ -14,8 +14,9 @@ Les données sont enregistrées dans le schéma flore de la base de données `bd
 
 Le projet exploite par ailleurs les mailles 1k (vue `limites.grid`) et les observations geonature (vue `flore.gn_synthese`).
 
-`taxref_12` est une table de correspondance entre les taxons de référence (cd_ref v12) utiles au projet et les cd_nom v 12 synonymes. Cette table est utilisée pour associer les cd_nom des observations issues de geonature au bon taxon de référence, sachant que la taxonomie de l'environnement geonature/bd_pnm est en version 11.  
-Clé primaire: cd_nom, index secondaire sur cd_ref.  
+`taxref_12` est un extrait de la taxonomie v12. Cette table est utilisée pour associer les cd_nom des observations issues de geonature au bon taxon de référence, sachant que la taxonomie de l'environnement geonature/bd_pnm est en version 11.  
+Clé primaire: cd_nom,  
+index secondaire sur cd_ref.  
 Le script `bin/taxref 12.py` peuple cette table avec les taxons flore de référence (taxref v12).
 Le script `bin/taxref 12 cd_nom.py` complète cette table avec les synonymes des taxons de `strategie_taxons` et des taxons source et redirigés de la table de redirection `redirection_taxon`, toujours en taxref v12.
 
@@ -30,6 +31,9 @@ select * from flore.strategie_taxons st left join flore.taxref_12 t on (st.cd_re
 ```
 
 Ajout des attributs score et priorite.
+
+Les espèces les plus prioritaires ont un indice de priorité 1, puis 2, etc.  
+Les espèces les plus prioritaires sont celles dont le score est le plus élevé.
 
 - score est initialement issu de la table strategie_notation (voir ci dessous).
 
@@ -56,51 +60,26 @@ Certains taxons de strategie_taxons sont absents de la liste.
 
 `strategie_mailles` donne un décompte du nombre de mailles et de nombre de mailles actives avant/depuis 1990 sur divers territoires de référence (Alpes, PNM). Cette table est utile à l'algorithme de notation.
 
-La vue matérialisée `flore.redirection_cache` donne pour chaque taxon cd_nom de la stratégie flore (dont le cd_ref est dans la table strategie_taxons ou cd_ref_source de la table redirection_taxon) le cd_ref redirigé correspondant (peut être NULL).
+### Vues
 
-La vue `flore.gn_synthese` donne les observations geonature éligibles pour la stratégie flore (observations détaillées, toutes dates, tous taxons).
+La vue `flore.gn_synthese` donne les observations geonature éligibles pour la stratégie flore (observations détaillées, toutes dates, tous taxons faune et flore).
+
+La vue `flore.observation_redirigee` donne la liste des observations (synthèse geonature) de taxons stratégiques avec les attributs du taxon de référence (après redirection éventuelle).
+
+La vue `flore.strategie_maille_taxon_attributs` clé primaire (id, cd_ref), donne les principales informations taxonomiques, de protection, de stratégie, de nombre d'observations et de localisation de la maille relatives aux observations du taxon cd_ref (après redirection éventuelle) sur la maille 1k id (cd_sig pour la référence de la maille).
+
+La vue `flore.strategie_maille_resume_attributs` donne un résumé pour chaque maille 1k, avec le nombre de taxons/taxons récents, le mobre de taxons récents par indice de priorité, le nombre d'observations/ observations récentes et les données territoriales de la maille.
+
+### Vues matérialisées (mise en cache des données d'observation agrégées par maille et taxon)
+
+Les vues matérialisée sont à usage interne, leur préférer les vues dans les projets QGIS.
+
+La vue matérialisée `flore.cor_taxon_attribut` détermine la valeur des attributs de protection et de patrimonialité des taxons de la stratégie flore.
+
+La vue matérialisée `flore.redirection_cache` donne pour chaque taxon cd_nom de la stratégie flore (c'est à dire un taxon dont le cd_ref est dans la table strategie_taxons ou cd_ref_source de la table redirection_taxon) le cd_ref redirigé correspondant (peut être NULL). A noter que la liste des cd_ref est établie avec l'hypothèse que cd_ref_source est un taxon de la stratégie, ce qui en toute rigueur n'est pas requis.
 
 La vue matérialisée `flore.strategie_maille_taxon_cache_v2` compile le cumul d'observations et d'observations récentes (1990 et après) par taxon de référence v12 (après redirection éventuelle du taxon source) et maille 1K sur le territoire recouvrant l'aire optimale totale du PNM.
 
+La vue matérialisée `flore.strategie_maille_resume_cache_v3` donne pour chaque maille 1k le nombre d'observations/observations récentes, le nombre de taxons/taxons récents, le nombre de taxons récents de priorité 1, 2 ou 3.
+
 ## QGIS
-
-Ménage dans la table strategie_taxons (nom valide, rang, suppression de colonnes inutiles)
-
-Validation de la table de redirection.
-
-134858 -> 99373
-134859 -> 134859
-134858 et 134859 sont des cd_nom synonymes de 99549 Galium spurium L., 1753
-Tu les renvoies vers 99373 Galium aparine L., 1753
-Je remplace les deux lignes par:
-99549 -> 99373
-
-149514 -> 113778
-149514 est un synonyme de 138869 Pisum sativum L., 1753 subsp. sativum
-Tu le renvoies vers 113778 Pisum sativum L., 1753
-Je réécris la ligne:
-138869 -> 113778
-
-718386 -> 113474
-718386 Phleum paniculatum Huds., 1762 subsp. paniculatum
-113474 Picris hieracioides L., 1753
-A confirmer après avoir sorti les sses non redirigées vers leur espèce.
-
-```
--- les cas de redirection pour lesquels la redirection n'est pas le taxsup de la source
-select
-rt.cd_ref_source , src.nom_complet nom_source, src.id_rang rang_source,
-rt.cd_ref, cible.nom_complet nom_cible, cible.id_rang rang_cible,
-src.cd_taxsup cd_nom_sup, sup.nom_complet nom_sup, sup.id_rang rang_sup
-from flore.redirection_taxon rt left join flore.taxref_12 src on (rt.cd_ref_source = src.cd_nom)
-left join flore.taxref_12 cible on (rt.cd_ref = cible.cd_nom)
-left join flore.taxref_12 sup on (src.cd_taxsup = sup.cd_nom)
-where rt.cd_ref is not null and  rt.cd_ref != src.cd_taxsup
-
--- verif que les taxons redirigés sont bien dans la stratégie
-select * from flore.redirection_taxon rt left join flore.strategie_taxons st  using(cd_ref)
-where rt.cd_ref is not null and st.score is null and rang not in ('GPE', 'SECT') and st.cd_ref < 20000000
-
--- verif qu'il n'y a pas de boucle (taxon redirigé sur un taxon redirigé)
-select * from flore.redirection_taxon rt  join flore.redirection_taxon t2 on rt.cd_ref = t2.cd_ref_source
-```
