@@ -104,6 +104,14 @@ CREATE MATERIALIZED VIEW flore.cor_taxon_attribut AS
 ALTER TABLE flore.cor_taxon_attribut OWNER TO flore;
 
 --
+-- Name: MATERIALIZED VIEW cor_taxon_attribut; Type: COMMENT; Schema: flore; Owner: flore
+--
+
+COMMENT ON MATERIALIZED VIEW flore.cor_taxon_attribut IS 'Prendre le max permet 1/ d''éliminer les doublons et 2/ de choisir oui lorsque oui et non sont proposés.
+id_attribut = 1 pour les espèces patrimoniales et 2 pour les espèces protégées.';
+
+
+--
 -- Name: flore_vasculaire_sensible_SINP_PACA_2021; Type: TABLE; Schema: flore; Owner: flore
 --
 
@@ -582,6 +590,14 @@ CREATE VIEW flore.strategie_maille_taxon_attributs AS
 
 
 ALTER TABLE flore.strategie_maille_taxon_attributs OWNER TO flore;
+
+--
+-- Name: VIEW strategie_maille_taxon_attributs; Type: COMMENT; Schema: flore; Owner: flore
+--
+
+COMMENT ON VIEW flore.strategie_maille_taxon_attributs IS 'clé primaire id, cd_ref
+Donne les principales informations taxonomiques, de protection, de stratégie, de nombre d''observations et de localisation de la maille relatives aux observations du taxon cd_ref (après redirection éventuelle) sur la maille 1k id (cd_sig pour la référence de la maille).';
+
 
 --
 -- Name: strategie_mailles; Type: TABLE; Schema: flore; Owner: flore
@@ -1120,7 +1136,6 @@ REVOKE ALL ON TABLE flore.taxref_12 FROM flore;
 GRANT SELECT ON TABLE flore.taxref_12 TO flore;
 GRANT ALL ON TABLE flore.taxref_12 TO admin;
 GRANT SELECT ON TABLE flore.taxref_12 TO consult_flore;
-GRANT ALL ON TABLE flore.taxref_12 TO "vincent.prunet@mercantour-parcnational.fr";
 GRANT SELECT ON TABLE flore.taxref_12 TO pnm_consult;
 
 
